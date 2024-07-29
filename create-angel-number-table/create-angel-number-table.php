@@ -6,6 +6,8 @@
     Author: mao kurihara
  */
 
+require_once plugin_dir_path(__FILE__) . 'constants.php';
+
 // プラグイン有効化時にエンジェルナンバーの初期設定を行う
 register_activation_hook(__FILE__, function() {
     if (!get_option('angel_numbers')) {
@@ -34,20 +36,43 @@ add_action('admin_init', function() {
     register_setting('angel_number_settings', 'angel_numbers');
 });
 
+// エンジェルナンバーが有効かどうかを確認する関数
+function is_valid_angel_number($new_number, $existing_numbers, &$error_code = null) {
+    // 半角数字かどうかをチェック
+    if (!preg_match('/^[0-9]+$/', $new_number)) {
+        $error_code = MESSAGE_INVALID_INPUT;
+        return false;
+    }
+
+    // 重複チェック
+    if (in_array($new_number, $existing_numbers)) {
+        $error_code = MESSAGE_DUPLICATE_ENTRY;
+        return false;
+    }
+
+    return true;
+}
+
 // フォームのデータを処理
 add_action('admin_post_save_angel_numbers', function() {
-    // ユーザーが正しいセキュリティ nonce を使用して別の管理ページから参照されたことを確認
-    check_admin_referer('save_angel_number_action');
+    // ユーザーがセキュリティ nonce を使用して正しい管理ページから参照されたことを確認
+    check_admin_referer('save_angel_number_action', '_wpnonce_save_angel_number');
 
     $new_number = sanitize_text_field($_POST['new_angel_number']);
     $numbers = get_option('angel_numbers', []);
-    if (!empty($new_number) && is_numeric($new_number)) {
+    $error_code = null;
+    $is_valid = is_valid_angel_number($new_number, $numbers, $error_code);
+
+    if (!is_array($numbers)) {
+        $numbers = []; // ここで配列に初期化
+    }
+    if ($is_valid) {
         $numbers[] = $new_number;
         update_option('angel_numbers', $numbers);
-        wp_redirect(add_query_arg('message', '1', $_POST['_wp_http_referer']));
+        wp_redirect(add_query_arg('message', MESSAGE_SUCCESS, $_POST['_wp_http_referer']));
         exit;
     } else {
-        wp_redirect(add_query_arg('message', '2', $_POST['_wp_http_referer']));
+        wp_redirect(add_query_arg('message',  $error_code, $_POST['_wp_http_referer']));
         exit;
     }
 });
