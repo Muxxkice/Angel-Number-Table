@@ -21,9 +21,21 @@
     <?php wp_nonce_field('save_angel_number_action', '_wpnonce_save_angel_number'); ?>
     <table>
       <tr><label>エンジェルナンバーの追加</label></tr>
-      <td><input type="text" name="new_angel_number" id="new_angel_number" value="" disabled /></td>
+      <td><input type="text" name="new_angel_number" id="new_angel_number" value="" /></td>
     </table>
-    <input type="submit" name="add_angel_number" class="button button-primary" value="追加" />
+    <input type="submit" name="add_angel_number" id="add_angel_number" class="button button-primary" value="追加" disabled/>
   </form>
 
 </div>
+
+<script>
+  const number = document.getElementById("new_angel_number");
+  const button = document.getElementById("add_angel_number");
+  number.addEventListener("input", () => {
+    if(number.value){
+      button.disabled = null;
+    } else {
+      button.disabled = "disabled";
+    }
+  })
+</script>
