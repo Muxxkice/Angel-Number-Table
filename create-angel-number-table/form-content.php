@@ -4,7 +4,6 @@
     settings_fields('angel_number_settings');
     do_settings_sections('angel_number_settings');
     $numbers = get_option('angel_numbers', []);
-              echo '<p>取得したデータ。値: ' . esc_html(var_export($numbers, true)) . '</p>';
   ?>
 
   <?php if (isset($_GET['message'])) : ?>
@@ -26,16 +25,44 @@
     <input type="submit" name="add_angel_number" id="add_angel_number" class="button button-primary" value="追加" disabled/>
   </form>
 
+  <form method="post" action="admin-post.php?action=delete_angel_numbers">
+    <?php wp_nonce_field('delete_angel_numbers_action', '_wpnonce_delete_angel_numbers'); ?>
+    <ul>
+    <?php sort($numbers); ?>
+    <?php foreach ($numbers as $index => $number): ?>
+        <li>
+            <label>
+                <input type="checkbox" name="delete_numbers[]" value="<?php echo esc_attr($index); ?>" class="number-checkbox">
+                <?php echo esc_html($number); ?>
+            </label>
+        </li>
+    <?php endforeach; ?>
+    </ul>
+    <input type="submit" id="delete_button" value="選択した数字を削除" class="button button-secondary" disabled>
+  </form>
+
 </div>
 
 <script>
+  // 数字追加用の入力フィールドとボタンの設定
   const number = document.getElementById("new_angel_number");
-  const button = document.getElementById("add_angel_number");
+  const addButton = document.getElementById("add_angel_number");
   number.addEventListener("input", () => {
     if(number.value){
-      button.disabled = null;
+      addButton.disabled = null;
     } else {
-      button.disabled = "disabled";
+      addButton.disabled = "disabled";
     }
   })
+
+  // チェックボックスと削除ボタンの設定
+  const checkboxes = document.querySelectorAll(".number-checkbox");
+  const deleteButton = document.getElementById("delete_button");
+
+  checkboxes.forEach(checkbox => {
+    checkbox.addEventListener("change", () => {
+      // 少なくとも一つのチェックボックスがチェックされているかを確認
+      deleteButton.disabled = !Array.from(checkboxes).some(chk => chk.checked);
+    });
+  });
 </script>
