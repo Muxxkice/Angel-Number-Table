@@ -190,6 +190,15 @@ function custom_table_with_angel_number_tags_shortcode()
     $numbers = array_unique($numbers);
     sort($numbers);
 
+    if (!is_array($numbers)) {
+        error_log('Error in custom_table_with_angel_number_tags_shortcode: Expected an array, received ' . gettype($numbers));
+        return '';
+    }
+
+    if (empty($numbers)) {
+        return '';
+    }
+
     // エンジェルナンバー表の作成
     return generate_angel_number_table($numbers);
 }
