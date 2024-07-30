@@ -20,7 +20,7 @@ add_action('admin_menu', function() {
         '管理メニュータイトル',
         'Custom Table Plugin with Tags',
         'manage_options',
-        'test_top_menu',
+        'top_menu',
         'menu_contents',
         'dashicons-calendar',
         0
@@ -57,6 +57,10 @@ function is_valid_angel_number($new_number, $existing_numbers, &$error_code = nu
 add_action('admin_post_save_angel_numbers', function() {
     // ユーザーがセキュリティ nonce を使用して正しい管理ページから参照されたことを確認
     check_admin_referer('save_angel_number_action', '_wpnonce_save_angel_number');
+
+    if (!current_user_can('manage_options')) {
+        wp_die(__('You do not have sufficient permissions to access this page.'));
+    }
 
     $new_number = sanitize_text_field($_POST['new_angel_number']);
     $numbers = get_option('angel_numbers', []);
@@ -122,52 +126,27 @@ function generate_angel_number_table($numbers)
         if ($counter % 5 != 0) {
             // 不足しているセルを追加
             $remaining = 5 - ($counter % 5);
-            for ($i = 0; $remaining < 5; $i++) {
+            for ($i = 0; $i < $remaining; $i++) {
                 $html .= '<td class="empty-cell"></td>';
             }
             $html .= '</tr>';
         }
         $html .= '</table>';
         $result .= $html;
+
+        // HTML文字列の解放
+        unset($html);
     }
+
     return $result;
 }
+
 
 // ショートコードを登録
 function custom_table_with_angel_number_tags_shortcode()
 {
-    $numbers = [];
-    $paged = 1;
-    $posts_per_page = 100; // 1度に取得する投稿の数
-
-    // 数字のタグから表にする数字のリストを作成
-    while (true) {
-        $args = array(
-            'post_type' => 'post',
-            'posts_per_page' => $posts_per_page,
-            'paged' => $paged
-        );
-        $query = new WP_Query($args);
-        if (!$query->have_posts()) {
-            break;
-        }
-
-        while ($query->have_posts()) {
-            $query->the_post();
-            $post_tags = get_the_tags();
-            if ($post_tags) {
-                foreach ($post_tags as $tag) {
-                    if (ctype_digit($tag->name)) {
-                        $numbers[] = $tag->name;
-                    }
-                }
-            }
-        }
-
-        $paged++;
-        wp_reset_postdata();
-    }
-
+    // データベースから保存されている数字のリストを取得
+    $numbers = get_option('angel_numbers', []);
     // 数字をユニークにし、ソート
     $numbers = array_unique($numbers);
     sort($numbers);
