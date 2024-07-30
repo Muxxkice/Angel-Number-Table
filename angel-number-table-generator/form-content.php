@@ -22,15 +22,17 @@
     <?php endif; ?>
   <?php endif; ?>
 
-  <form method="post" action="admin-post.php?action=save_angel_numbers">
-    <?php wp_nonce_field('save_angel_number_action', '_wpnonce_save_angel_number'); ?>
-    <h3>■エンジェナンバーの追加</h3>
-    <table>
-      <tr><label>追加したい数字(半角英数字)</label></tr>
-      <td><input type="text" name="new_angel_number" id="new_angel_number" value="" /></td>
-    </table>
-    <input type="submit" name="add_angel_number" id="add_angel_number" class="button button-primary" value="追加" disabled/>
-  </form>
+  <section>
+    <form method="post" action="admin-post.php?action=save_angel_numbers">
+      <?php wp_nonce_field('save_angel_number_action', '_wpnonce_save_angel_number'); ?>
+      <h3>■エンジェナンバーの追加</h3>
+      <table>
+        <tr><label>追加したい数字(半角英数字)</label></tr>
+        <td><input type="text" name="new_angel_number" id="new_angel_number" value="" /></td>
+      </table>
+      <input type="submit" name="add_angel_number" id="add_angel_number" class="button button-primary" value="追加" disabled/>
+    </form>
+  </section>
 
   <section>
     <form method="post" action="admin-post.php?action=delete_angel_numbers">
