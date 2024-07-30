@@ -1,7 +1,7 @@
 <?php
 /*
-    Plugin Name: Custom Table Plugin with Tags
-    Description: エンジェルナンバーのテーブル作成を自動化するためのプラグイン。記事につけられた#数字のタグを元にテーブルを生成します。
+    Plugin Name: Angel Number Table Generator
+    Description: エンジェルナンバーのテーブル作成を自動化するためのプラグイン。
     Version: 1.0
     Author: mao kurihara
  */
@@ -18,7 +18,7 @@ register_activation_hook(__FILE__, function() {
 add_action('admin_menu', function() {
     add_menu_page(
         '管理メニュータイトル',
-        'Custom Table Plugin with Tags',
+        'Angel Number Table Generator',
         'manage_options',
         'top_menu',
         'menu_contents',
