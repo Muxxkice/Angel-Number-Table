@@ -32,23 +32,25 @@
     <input type="submit" name="add_angel_number" id="add_angel_number" class="button button-primary" value="追加" disabled/>
   </form>
 
-  <form method="post" action="admin-post.php?action=delete_angel_numbers">
-    <h3>■エンジェナンバーの削除</h3>
-    <p>削除したい数字にチェックを入れてください</p>
-    <?php wp_nonce_field('delete_angel_numbers_action', '_wpnonce_delete_angel_numbers'); ?>
-    <ul>
-    <?php sort($numbers); ?>
-    <?php foreach ($numbers as $index => $number): ?>
-        <li>
-            <label>
-                <input type="checkbox" name="delete_numbers[]" value="<?php echo esc_attr($index); ?>" class="number-checkbox">
-                <?php echo esc_html($number); ?>
-            </label>
-        </li>
-    <?php endforeach; ?>
-    </ul>
-    <input type="submit" id="delete_button" value="選択した数字を削除" class="button button-secondary" disabled>
-  </form>
+  <section>
+    <form method="post" action="admin-post.php?action=delete_angel_numbers">
+      <h3>■エンジェナンバーの削除</h3>
+      <p>削除したい数字にチェックを入れてください</p>
+      <?php wp_nonce_field('delete_angel_numbers_action', '_wpnonce_delete_angel_numbers'); ?>
+      <ul>
+      <?php sort($numbers); ?>
+      <?php foreach ($numbers as $number): ?>
+          <li>
+              <label>
+                  <input type="checkbox" name="delete_numbers[]" value="<?php echo esc_attr($number); ?>" class="number-checkbox">
+                  <?php echo esc_html($number); ?>
+              </label>
+          </li>
+      <?php endforeach; ?>
+      </ul>
+      <input type="submit" id="delete_button" value="選択した数字を削除" class="button button-secondary" disabled>
+    </form>
+  </section>
 
 </div>
 

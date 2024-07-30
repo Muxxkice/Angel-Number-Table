@@ -68,7 +68,7 @@ add_action('admin_post_save_angel_numbers', function() {
     $is_valid = is_valid_angel_number($new_number, $numbers, $error_code);
 
     if (!is_array($numbers)) {
-        $numbers = []; // ここで配列に初期化
+        $numbers = [];
     }
     if ($is_valid) {
         $numbers[] = $new_number;
@@ -80,6 +80,45 @@ add_action('admin_post_save_angel_numbers', function() {
         exit;
     }
 });
+
+// 選択された数字を削除する処理
+add_action('admin_post_delete_angel_numbers', 'delete_angel_numbers');
+function delete_angel_numbers() {
+    if (!isset($_POST['_wpnonce_delete_angel_numbers']) || !wp_verify_nonce($_POST['_wpnonce_delete_angel_numbers'], 'delete_angel_numbers_action')) {
+        wp_die(__('Nonce verification failed', 'text-domain'));
+    }
+
+    if (!current_user_can('manage_options')) {
+        wp_die(__('You do not have sufficient permissions to access this page.'));
+    }
+
+    // 削除する数字のリストを取得
+    $delete_numbers = isset($_POST['delete_numbers']) ? (array) $_POST['delete_numbers'] : [];
+    error_log('Delete Numbers: ' . print_r($delete_numbers, true)); // デバッグログ
+
+    // 現在の数字を取得
+    $numbers = get_option('angel_numbers', []);
+    error_log('Current Numbers: ' . print_r($numbers, true)); // デバッグログ
+
+    // 選択された数字を削除
+    foreach ($delete_numbers as $number) {
+        $key = array_search($number, $numbers);
+        if ($key !== false) {
+            unset($numbers[$key]);
+        }
+    }
+
+    // 配列の再インデックス化
+    $numbers = array_values($numbers);
+
+    // 更新後の配列を保存
+    update_option('angel_numbers', $numbers);
+
+    // リダイレクト処理
+    wp_redirect(add_query_arg('message', MESSAGE_SUCCESS, wp_get_referer()));
+    exit;
+}
+
 
 
 // エンジェルナンバーの桁数ごとの配列に分けた二重配列を作成
@@ -115,7 +154,7 @@ function generate_angel_number_table($numbers)
             if ($counter % 5 == 0) {
                 $html .= '<tr>';
             }
-            $html .= '<td><a href="https://rensa.jp.net/angelnumber-' . $number . '">' . $number . '</a></td>';
+            $html .= '<td><a href="https://rensa.jp.net/angelnumber-' . esc_attr($number) . '">' . esc_html($number) . '</a></td>';
             if ($counter % 5 == 4) {
                 $html .= '</tr>';
             }
