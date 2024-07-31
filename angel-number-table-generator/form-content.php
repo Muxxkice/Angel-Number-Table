@@ -22,19 +22,21 @@
     <?php endif; ?>
   <?php endif; ?>
 
-  <section>
+  <div>
     <form method="post" action="admin-post.php?action=save_angel_numbers">
       <?php wp_nonce_field('save_angel_number_action', '_wpnonce_save_angel_number'); ?>
       <h3>■エンジェナンバーの追加</h3>
       <table>
         <tr><label>追加したい数字(半角英数字)</label></tr>
         <td><input type="text" name="new_angel_number" id="new_angel_number" value="" /></td>
+        <!-- 入力値をリンクとして表示する部分 -->
+        <td id="number-link"></td>
       </table>
       <input type="submit" name="add_angel_number" id="add_angel_number" class="button button-primary" value="追加" disabled/>
     </form>
-  </section>
+  </div>
 
-  <section>
+  <div>
     <form method="post" action="admin-post.php?action=delete_angel_numbers">
       <h3>■エンジェナンバーの削除</h3>
       <p>削除したい数字にチェックを入れてください</p>
@@ -52,19 +54,25 @@
       </ul>
       <input type="submit" id="delete_button" value="選択した数字を削除" class="button button-secondary" disabled>
     </form>
-  </section>
+  </div>
 
 </div>
 
 <script>
   // 数字追加用の入力フィールドとボタンの設定
-  const number = document.getElementById("new_angel_number");
+  const numberInput = document.getElementById("new_angel_number");
   const addButton = document.getElementById("add_angel_number");
-  number.addEventListener("input", () => {
-    if(number.value){
+  const numberLinkDiv = document.getElementById("number-link");
+
+  numberInput.addEventListener("input", () => {
+    if(numberInput.value){
       addButton.disabled = null;
+
+      // リンク生成
+      numberLinkDiv.innerHTML = `<a href="https://rensa.jp.net/angelnumber-${numberInput.value}" target="_blank">https://rensa.jp.net/angelnumber-${numberInput.value}</a>`;
     } else {
       addButton.disabled = "disabled";
+      numberLinkDiv.innerHTML = "";
     }
   })
 
